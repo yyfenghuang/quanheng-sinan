@@ -1,0 +1,38 @@
+% Shared LaTeX preamble for 权衡司南 entries.
+% Every entry pulls this in with \input{../../templates/preamble}.
+% Do not copy this file into an entry. One file, one source of truth.
+%
+% Engine note: the content is Mandarin, so entries are built with XeLaTeX
+% (see the Makefile LATEX variable and the CI workflow). pdfLaTeX cannot set
+% CJK body text. The iftex guard below keeps a pdfLaTeX run from hard-failing
+% on the fontspec/ctex packages, but only XeLaTeX or LuaLaTeX produces correct
+% Mandarin output.
+
+\usepackage{iftex}
+
+\usepackage{xcolor}
+\definecolor{Primary}{HTML}{5C1D74}   % deep purple
+\definecolor{Secondary}{HTML}{E5C300} % yellow
+\definecolor{Tertiary}{HTML}{1D7466}  % teal
+
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else
+  % XeLaTeX / LuaLaTeX: Unicode engine with CJK support for Mandarin.
+  \usepackage{fontspec}
+  \usepackage{ctex}
+\fi
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+
+\usepackage{graphicx}
+\graphicspath{{figures/}}
+% SVG figures are included via the svg package (needs inkscape + -shell-escape).
+% GIF figures never enter the PDF; the HTML version references the GIF instead.
+\usepackage{svg}
+
+\usepackage[colorlinks=true, linkcolor=Primary, urlcolor=Tertiary,
+            citecolor=Tertiary]{hyperref}

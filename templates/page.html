@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>$if(title)$$title$$else$权衡司南$endif$</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&family=Noto+Serif:wght@600;700&display=swap" rel="stylesheet">
+$for(css)$
+  <link rel="stylesheet" href="$css$">
+$endfor$
+$if(math)$
+  $math$
+$endif$
+</head>
+<body>
+  <main class="entry">
+$if(title)$
+    <header class="entry-header">
+      <h1 class="entry-title">$title$</h1>
+$if(date)$
+      <p class="entry-date">$date$</p>
+$endif$
+    </header>
+$endif$
+$body$
+    <footer class="entry-footer">
+      <a href="../../index.html">← 权衡司南</a>
+    </footer>
+  </main>
+</body>
+</html>

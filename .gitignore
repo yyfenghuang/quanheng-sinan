@@ -1,0 +1,18 @@
+# Generated site. Rebuilt by `make build`, deployed to gh-pages by CI.
+_site/
+
+# LaTeX build aux (main.pdf and index.html are committed; these are not).
+*.aux
+*.log
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+
+# Python
+__pycache__/
+*.pyc
+
+# Editor / OS
+.DS_Store
