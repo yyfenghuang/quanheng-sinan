@@ -3,6 +3,7 @@ _site/
 
 # Internal working docs, kept local (not published).
 claude/
+CLAUDE.md
 
 # LaTeX build aux (main.pdf and index.html are committed; these are not).
 *.aux
