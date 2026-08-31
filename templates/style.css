@@ -1,138 +1,271 @@
-/* 权衡司南 — one stylesheet, shared across every entry and the index.
-   Palette and typography are sourced from the cookbook design tokens. */
+/* ===================================================================
+   权衡司南 style.css
+   Golden-ratio type & spacing scale, fluid across mobile/tablet/desktop.
+   One stylesheet, shared across every entry and the index. Palette and
+   typography follow the cookbook design tokens.
+   =================================================================== */
 
+/* --- Design tokens --- */
 :root {
-  --primary:   #5C1D74; /* deep purple: headings, key path */
-  --secondary: #E5C300; /* yellow: accent, highlight */
-  --tertiary:  #1D7466; /* teal: links, capture points */
-  --text:      #25172A; /* near-black: body text */
-  --bg:        #FCFAFF; /* off-white: background */
-  --muted:     #B9AEC2; /* grey-purple: inactive, meta */
+  --primary:    #5C1D74; /* deep purple: headings, structure, key path */
+  --secondary:  #E5C300; /* yellow: accent, active marker, highlight */
+  --tertiary:   #1D7466; /* teal: links, kicker, capture points */
+  --text:       #25172A; /* near-black: body text */
+  --bg:         #FCFAFF; /* off-white: page background */
+  --muted:      #B9AEC2; /* grey-purple: meta, inactive, hairlines */
 
-  --serif: "Noto Serif", Georgia, serif;
-  --sans:  "Noto Sans", system-ui, sans-serif;
-  --mono:  ui-monospace, "SF Mono", Menlo, monospace;
+  /* Tinted backgrounds: colour mixed to 14% over bg. This is the figures'
+     86%-bg rule (_mix(colour, BG, 0.86)) stated from the other side. Callout,
+     code, and hover all share this weight. */
+  --primary-wash:   color-mix(in srgb, var(--primary) 14%, var(--bg));
+  --secondary-wash: color-mix(in srgb, var(--secondary) 14%, var(--bg));
+  --code-wash:      color-mix(in srgb, var(--primary) 14%, var(--bg));
+  /* Rules and hairlines come from muted (palette role: "rules, meta text"). */
+  --hairline:       color-mix(in srgb, var(--muted) 55%, var(--bg));
 
-  --measure: 42rem;
+  /* type families: Latin faces first, CJK (SC) fallback for Mandarin */
+  --serif: "Noto Serif", "Noto Serif SC", Georgia, "Songti SC", serif;
+  --sans:  "Noto Sans", "Noto Sans SC", system-ui, "PingFang SC", sans-serif;
+  --mono:  ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+
+  /* Golden ratio */
+  --phi: 1.618;
+
+  /* Base font size scales fluidly with viewport (16px mobile → 19px desktop).
+     Everything below derives from this, so the whole page breathes at once. */
+  --base: clamp(1rem, 0.9rem + 0.5vw, 1.1875rem);
+
+  /* Type scale: each step is the previous × ratio. Ratio opens up on wider
+     screens (below) so headings gain presence without overwhelming mobile. */
+  --scale-ratio: 1.2;   /* phone: gentle, keeps a 4-step h1 from dominating */
+  --f--1: calc(var(--base) / var(--scale-ratio));  /* captions, footnotes */
+  --f-0:  var(--base);                             /* body */
+  --f-1:  calc(var(--base) * var(--scale-ratio));  /* h4 */
+  --f-2:  calc(var(--f-1) * var(--scale-ratio));   /* h3 */
+  --f-3:  calc(var(--f-2) * var(--scale-ratio));   /* h2 */
+  --f-4:  calc(var(--f-3) * var(--scale-ratio));   /* h1 */
+
+  /* Spacing scale: geometric sequence with ratio φ, anchored to base. */
+  --s-3: calc(var(--base) / (var(--phi) * var(--phi) * var(--phi)));
+  --s-2: calc(var(--base) / (var(--phi) * var(--phi)));
+  --s-1: calc(var(--base) / var(--phi));
+  --s0:  var(--base);
+  --s1:  calc(var(--base) * var(--phi));
+  --s2:  calc(var(--base) * var(--phi) * var(--phi));
+  --s3:  calc(var(--base) * var(--phi) * var(--phi) * var(--phi));
+
+  /* Reading measure: CJK-aware, em-based (NOT a Latin ch count). PROVISIONAL
+     until tested on real Mandarin entries at phone/tablet/desktop; target
+     near the top of the 30 to 40 Han-character range. Provisional; flag in the
+     publish check. Desktop padding must not shrink content below this. */
+  --measure: 38em;
+  --line-body: var(--phi); /* prose line-height = φ, per the styling cookbook */
+  --line-tight: 1.22;      /* headings */
 }
 
-* { box-sizing: border-box; }
+@media (min-width: 48rem) { :root { --scale-ratio: 1.25; } }  /* tablet+ */
+@media (min-width: 75rem) { :root { --scale-ratio: 1.3; } }   /* desktop */
 
-html { font-size: 18px; }
+/* --- Reset & base --- */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
 
 body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
   font-family: var(--sans);
-  line-height: 1.65;
-  -webkit-font-smoothing: antialiased;
+  font-size: var(--f-0);
+  line-height: var(--line-body);
   text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
 }
 
+::selection { background: var(--secondary-wash); }
+
+/* --- Layout column ---
+   The pipeline emits <main class="entry"> and <main class="index"> as the
+   single reading column. Width tracks the measure plus breathing room; padding
+   grows by φ-steps at each breakpoint. */
 main {
-  max-width: var(--measure);
-  margin: 0 auto;
-  padding: 4rem 1.25rem 6rem;
+  width: 100%;
+  max-width: calc(var(--measure) + var(--s2) * 2);
+  margin-inline: auto;
+  padding-inline: var(--s1);
+  padding-block: var(--s2) var(--s3);
 }
+/* Padding stays at s2 from tablet up: the column cap already budgets for s2, so
+   content lands exactly at the measure instead of short of it. */
+@media (min-width: 48rem) { main { padding-inline: var(--s2); } }
 
+/* --- Headings --- */
 h1, h2, h3, h4 {
   font-family: var(--serif);
+  line-height: var(--line-tight);
   color: var(--primary);
-  font-weight: 700;
-  line-height: 1.2;
-  margin: 2.4rem 0 0.8rem;
+  margin-block: var(--s2) var(--s0);
+  text-wrap: balance;
 }
-h1 { font-size: 2.1rem; letter-spacing: -0.01em; }
-h2 { font-size: 1.5rem; }
-h3 { font-size: 1.2rem; }
-
-p { margin: 0 0 1.1rem; }
-
-a {
-  color: var(--tertiary);
-  text-decoration: none;
-  border-bottom: 1px solid rgba(29, 116, 102, 0.35);
+h1 { font-size: var(--f-4); margin-block-start: 0; letter-spacing: -0.01em; }
+h2 {
+  font-size: var(--f-3);
+  padding-block-end: var(--s-2);
+  border-block-end: 1px solid var(--hairline);
 }
-a:hover { border-bottom-color: var(--tertiary); }
+h3 { font-size: var(--f-2); }
+h4 { font-size: var(--f-1); color: var(--text); }
 
-strong { font-weight: 700; }
+/* --- Body flow: vertical rhythm on the φ spacing scale --- */
+p, ul, ol, blockquote, pre, figure, table { margin-block: 0 var(--s1); }
+
+/* Lede: first paragraph of an entry reads a touch larger. */
+.entry > header + p { font-size: calc(var(--f-0) * 1.08); }
+
+ul, ol { padding-inline-start: var(--s1); }
+li { margin-block: var(--s-2); }
+li::marker { color: var(--primary); }
+ul ul, ol ol, ul ol, ol ul { margin-block-end: 0; }
+
+strong { font-weight: 700; color: var(--text); }
 em { font-style: italic; }
 
-code, pre { font-family: var(--mono); font-size: 0.9em; }
-code {
-  background: rgba(92, 29, 116, 0.08);
-  padding: 0.1em 0.35em;
-  border-radius: 3px;
+/* --- Links --- */
+a {
+  color: var(--tertiary);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.15em;
 }
-pre {
-  background: rgba(92, 29, 116, 0.06);
-  border-left: 3px solid var(--primary);
-  padding: 1rem 1.15rem;
-  border-radius: 6px;
-  overflow-x: auto;
+a:hover { color: var(--primary); }
+a:focus-visible {
+  outline: 2px solid var(--secondary);
+  outline-offset: 2px;
+  border-radius: 2px;
 }
-pre code { background: none; padding: 0; }
 
-figure { margin: 2rem 0; text-align: center; }
-figure img, p img, svg { max-width: 100%; height: auto; }
-figcaption { font-size: 0.85rem; color: var(--muted); margin-top: 0.5rem; }
-
+/* --- Blockquote --- */
 blockquote {
-  margin: 1.6rem 0;
-  padding: 0.4rem 1.15rem;
-  border-left: 3px solid var(--secondary);
+  padding: var(--s0) var(--s1);
+  border-inline-start: 3px solid var(--secondary);
+  background: var(--primary-wash);
+  color: var(--text);
+}
+blockquote p:last-child { margin-block-end: 0; }
+
+/* --- Figures (SVG / GIF from the pipeline) --- */
+figure { margin-inline: 0; text-align: center; }
+img, svg { max-width: 100%; height: auto; }
+figure img, figure svg { display: block; margin-inline: auto; }
+figcaption {
+  font-size: var(--f--1);
+  color: var(--muted);
+  line-height: var(--line-body);
+  margin-block-start: var(--s-1);
 }
 
-hr { border: none; border-top: 1px solid var(--muted); margin: 2.5rem 0; }
+/* --- Code --- */
+pre, code { font-family: var(--mono); font-size: var(--f--1); }
+pre {
+  padding: var(--s0);
+  overflow-x: auto;
+  background: var(--code-wash);
+  border-radius: 4px;
+  line-height: 1.55;
+}
+code { padding: 0.1em 0.35em; background: var(--code-wash); border-radius: 3px; }
+pre code { padding: 0; background: none; }
 
-/* Per-entry page */
+/* --- Tables --- */
+table { width: 100%; border-collapse: collapse; font-size: var(--f--1); }
+th, td {
+  text-align: start;
+  padding: var(--s-1) var(--s0);
+  border-block-end: 1px solid var(--hairline);
+}
+thead th {
+  font-family: var(--serif);
+  font-weight: 700;
+  color: var(--primary);
+  border-block-end: 2px solid var(--muted);
+}
+tbody tr:hover { background: var(--primary-wash); }
+@media (max-width: 34rem) { table { display: block; overflow-x: auto; } }
+
+/* --- Footnotes (pandoc) --- */
+.footnote-ref { font-weight: 600; }
+.footnotes { font-size: var(--f--1); color: var(--text); margin-block-start: var(--s2); }
+.footnotes hr { border: 0; border-block-start: 1px solid var(--hairline); margin-block: var(--s1); }
+.footnotes li:target { background: var(--secondary-wash); border-radius: 3px; }
+
+/* --- Per-entry page --- */
+.entry-kicker {
+  display: inline-block;
+  font-family: var(--sans);
+  font-size: var(--f--1);
+  letter-spacing: 0.14em;
+  color: var(--tertiary);
+  text-decoration: none;
+  margin-block-end: var(--s-1);
+}
+.entry-kicker:hover { color: var(--primary); }
 .entry-header {
-  margin-bottom: 2rem;
-  padding-bottom: 1rem;
-  border-bottom: 2px solid var(--primary);
+  margin-block-end: var(--s2);
+  padding-block-end: var(--s0);
+  border-block-end: 2px solid var(--muted);
 }
-.entry-header .entry-title { margin: 0 0 0.4rem; }
-.entry-date { color: var(--muted); font-size: 0.9rem; margin: 0; }
+.entry-header .entry-title { margin-block: 0 var(--s-1); }
+.entry-date { color: var(--muted); font-size: var(--f--1); letter-spacing: 0.03em; margin: 0; }
 .entry-footer {
-  margin-top: 4rem;
-  padding-top: 1.2rem;
-  border-top: 1px solid var(--muted);
-  font-size: 0.9rem;
+  margin-block-start: var(--s3);
+  padding-block-start: var(--s1);
+  border-block-start: 1px solid var(--hairline);
+  font-size: var(--f--1);
 }
+.entry-footer a { text-decoration: none; }
 
-/* Index page */
-.site-header { margin-bottom: 3rem; }
-.site-title { font-size: 2.6rem; margin: 0; }
+/* --- Index page --- */
+.site-header {
+  margin-block-end: var(--s2);
+  padding-block-end: var(--s1);
+  border-block-end: 2px solid var(--muted);
+}
+.site-title { font-size: var(--f-4); margin: 0; letter-spacing: -0.01em; }
 .site-tagline {
   font-family: var(--serif);
   font-style: italic;
   color: var(--tertiary);
-  margin: 0.3rem 0 0.6rem;
+  font-size: var(--f-1);
+  margin-block: var(--s-2) var(--s-1);
 }
-.site-sub { font-size: 0.85rem; margin: 0; }
+.site-sub { font-size: var(--f--1); letter-spacing: 0.08em; margin: 0; }
+.site-sub a { text-decoration: none; }
 
-.entry-card { padding: 1.4rem 0; border-bottom: 1px solid rgba(185, 174, 194, 0.5); }
-.entry-card .entry-title { font-size: 1.35rem; margin: 0; color: var(--primary); }
-.entry-link { border: none; }
+.entry-card { padding-block: var(--s1); border-block-end: 1px solid var(--hairline); }
+.entry-card .entry-title {
+  font-size: var(--f-2);
+  margin: 0;
+  color: var(--primary);
+  border-block-end: none;
+  padding-block-end: 0;
+}
+.entry-link { text-decoration: none; display: block; }
 .entry-link:hover .entry-title { color: var(--tertiary); }
 .entry-meta {
   display: flex;
-  gap: 1rem;
-  font-size: 0.82rem;
+  gap: var(--s0);
+  align-items: baseline;
+  font-size: var(--f--1);
   color: var(--muted);
-  margin: 0.3rem 0 0.5rem;
+  letter-spacing: 0.03em;
+  margin-block: var(--s-2) var(--s-1);
 }
-.entry-repo { font-size: 0.82rem; }
-.entry-desc { margin: 0; }
+.entry-desc { margin: 0; color: var(--text); }
 .empty { color: var(--muted); }
 
-/* Pandoc footnotes */
-.footnotes {
-  font-size: 0.85rem;
-  border-top: 1px solid var(--muted);
-  margin-top: 3rem;
-}
-
-/* MathJax: keep wide equations from breaking the layout */
+/* --- MathJax: keep wide equations from breaking the layout --- */
 mjx-container { max-width: 100%; overflow-x: auto; overflow-y: hidden; }
+mjx-container[display="true"] { margin-block: var(--s1); }
+
+/* --- Motion & accessibility floors --- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
