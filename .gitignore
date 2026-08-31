@@ -1,6 +1,9 @@
 # Generated site. Rebuilt by `make build`, deployed to gh-pages by CI.
 _site/
 
+# Internal working docs, kept local (not published).
+claude/
+
 # LaTeX build aux (main.pdf and index.html are committed; these are not).
 *.aux
 *.log
