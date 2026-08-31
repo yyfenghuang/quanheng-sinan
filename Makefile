@@ -41,6 +41,7 @@ html:
 		echo "pandoc $$dir"; \
 		( cd $$dir && pandoc main.tex \
 			--from latex --to html5 --standalone \
+			--shift-heading-level-by=1 \
 			--template ../../$(TEMPLATES)/page.html \
 			--css ../../$(TEMPLATES)/style.css \
 			--mathjax \

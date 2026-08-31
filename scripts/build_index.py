@@ -17,7 +17,8 @@ FONTS = (
     '<link rel="preconnect" href="https://fonts.googleapis.com">\n'
     '  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n'
     '  <link href="https://fonts.googleapis.com/css2?'
-    "family=Noto+Sans:wght@400;600;700&family=Noto+Serif:wght@600;700&"
+    "family=Noto+Sans:wght@400;600;700&family=Noto+Sans+SC:wght@400;700&"
+    "family=Noto+Serif:wght@600;700&family=Noto+Serif+SC:wght@600;700&"
     'display=swap" rel="stylesheet">'
 )
 
