@@ -25,13 +25,18 @@ PUBLISHED := $(shell $(PY) scripts/list_published.py)
 build: pdf html site rss index
 	@echo "build complete -> $(SITE)/"
 
+# PDF is best-effort. A failed compile (e.g. a GIF-only entry that xelatex
+# cannot embed) prints a warning and continues, so it never blocks the HTML
+# build or the deploy. HTML is the published artifact; the PDF is a bonus.
 pdf:
 	@if ! command -v $(LATEX) >/dev/null 2>&1; then \
 		echo "$(LATEX) not found; skipping PDF step"; \
 	else \
 		for dir in $(PUBLISHED); do \
 			echo "$(LATEX) $$dir"; \
-			( cd $$dir && $(LATEX) $(LATEXFLAGS) main.tex >/dev/null ); \
+			if ! ( cd $$dir && $(LATEX) $(LATEXFLAGS) main.tex >/dev/null ); then \
+				echo "  warning: PDF failed for $$dir; HTML still built, deploy continues"; \
+			fi; \
 		done; \
 	fi
 
