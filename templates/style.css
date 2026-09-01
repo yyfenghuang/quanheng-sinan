@@ -43,7 +43,17 @@
   --f-1:  calc(var(--base) * var(--scale-ratio));  /* h4 */
   --f-2:  calc(var(--f-1) * var(--scale-ratio));   /* h3 */
   --f-3:  calc(var(--f-2) * var(--scale-ratio));   /* h2 */
-  --f-4:  calc(var(--f-3) * var(--scale-ratio));   /* h1 */
+  --f-4:  calc(var(--f-3) * var(--scale-ratio));   /* h4->h1 ladder top; lands at the desktop title ceiling */
+
+  /* Title exemption. The ladder compounds --scale-ratio four times to reach
+     --f-4, so at the 16px phone floor the title inherits a ~34px top, wraps
+     mid-title, and the two lines nearly touch. Give the title its own clamp:
+     a lower phone floor so it calms down (but still above h2, so title-over-
+     section hierarchy survives), a fixed ceiling equal to the desktop --f-4
+     (~54px) so wide screens are unchanged, and a smooth vw ramp between. This
+     is the one place the single-primitive rule is relaxed on purpose, because
+     the fourth power is exactly what bites at the title. */
+  --f-title: clamp(1.95rem, 1.15rem + 2.95vw, 3.375rem);
 
   /* Spacing scale: geometric sequence with ratio φ, anchored to base. */
   --s-3: calc(var(--base) / (var(--phi) * var(--phi) * var(--phi)));
@@ -60,7 +70,11 @@
      publish check. Desktop padding must not shrink content below this. */
   --measure: 38em;
   --line-body: var(--phi); /* prose line-height = φ, per the styling cookbook */
-  --line-tight: 1.22;      /* headings */
+  --line-tight: 1.25;      /* h2 to h4: a hair looser than before so a wrapped
+                              CJK section title is not cramped at the seam */
+  --line-title: 1.32;      /* h1 title: the element most likely to wrap to two
+                              lines on a phone, and full-height CJK glyphs (no
+                              descenders) need extra leading where the lines meet */
 }
 
 @media (min-width: 48rem) { :root { --scale-ratio: 1.25; } }  /* tablet+ */
@@ -106,7 +120,7 @@ h1, h2, h3, h4 {
   margin-block: var(--s2) var(--s0);
   text-wrap: balance;
 }
-h1 { font-size: var(--f-4); margin-block-start: 0; letter-spacing: -0.01em; }
+h1 { font-size: var(--f-title); line-height: var(--line-title); margin-block-start: 0; letter-spacing: -0.01em; }
 h2 {
   font-size: var(--f-3);
   padding-block-end: var(--s-2);
@@ -228,7 +242,7 @@ tbody tr:hover { background: var(--primary-wash); }
   padding-block-end: var(--s1);
   border-block-end: 2px solid var(--muted);
 }
-.site-title { font-size: var(--f-4); margin: 0; letter-spacing: -0.01em; }
+.site-title { font-size: var(--f-title); margin: 0; letter-spacing: -0.01em; }
 .site-tagline {
   font-family: var(--serif);
   font-style: italic;
