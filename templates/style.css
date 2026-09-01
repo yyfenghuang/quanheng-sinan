@@ -45,15 +45,19 @@
   --f-3:  calc(var(--f-2) * var(--scale-ratio));   /* h2 */
   --f-4:  calc(var(--f-3) * var(--scale-ratio));   /* h4->h1 ladder top; lands at the desktop title ceiling */
 
-  /* Title exemption. The ladder compounds --scale-ratio four times to reach
-     --f-4, so at the 16px phone floor the title inherits a ~34px top, wraps
-     mid-title, and the two lines nearly touch. Give the title its own clamp:
-     a lower phone floor so it calms down (but still above h2, so title-over-
-     section hierarchy survives), a fixed ceiling equal to the desktop --f-4
-     (~54px) so wide screens are unchanged, and a smooth vw ramp between. This
-     is the one place the single-primitive rule is relaxed on purpose, because
-     the fourth power is exactly what bites at the title. */
-  --f-title: clamp(1.95rem, 1.15rem + 2.95vw, 3.375rem);
+  /* Title size, defined relative to h2 so the two can never collapse. The
+     ladder gives the title four compounded steps and h2 three, so on a phone
+     (one rung = 1.2x) the title sits only 1.2x above h2, which reads as the
+     same size once they also share colour, weight, and serif. A lower fixed
+     floor made this worse, not better. So the title is pinned to h2 (--f-3)
+     directly: exactly 1.3x it, which is the same step the title already has
+     over h2 on desktop. The step is then guaranteed by construction at every
+     width and cannot drift; h2's own breakpoint jumps carry the title with
+     them, so the ratio holds across them. Capped at the desktop ceiling
+     (3.375rem ~= 54px) so wide screens are unchanged. This is the one place
+     the derive-from-one-primitive rule bends, and it bends toward a primitive
+     already in the system (--f-3) rather than a magic number. */
+  --f-title: min(calc(var(--f-3) * 1.3), 3.375rem);
 
   /* Spacing scale: geometric sequence with ratio φ, anchored to base. */
   --s-3: calc(var(--base) / (var(--phi) * var(--phi) * var(--phi)));
