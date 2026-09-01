@@ -1,0 +1,8 @@
+{
+  "slug": "001-rope-derived",
+  "title": "RoPE 是怎么被逼出来的",
+  "date": "2026-09-01",
+  "description": "注意力看不见顺序，位置只能从外面注入。把这个要求写成等式，旋转是唯一被逼出来的解。",
+  "status": "published",
+  "repo_url": "https://github.com/yyfenghuang/RoPE-first-principle"
+}
