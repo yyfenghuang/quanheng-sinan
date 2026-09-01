@@ -5,6 +5,15 @@
     <link>https://yyfenghuang.github.io/quanheng-sinan/</link>
     <description>黄宇峰。第一性原理的思考，以思考的速度。</description>
     <language>zh-Hans</language>
-    <lastBuildDate>Mon, 31 Aug 2026 18:55:04 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 01 Sep 2026 14:24:21 +0000</lastBuildDate>
+    <item>
+      <title>RoPE 是怎么被逼出来的</title>
+      <link>https://yyfenghuang.github.io/quanheng-sinan/entries/001-rope-derived/</link>
+      <guid isPermaLink="true">https://yyfenghuang.github.io/quanheng-sinan/entries/001-rope-derived/</guid>
+      <description>注意力看不见顺序，位置只能从外面注入。把这个要求写成等式，旋转是唯一被逼出来的解。
+
+代码仓库: https://github.com/yyfenghuang/RoPE-first-principle</description>
+      <pubDate>Tue, 01 Sep 2026 00:00:00 +0000</pubDate>
+    </item>
   </channel>
 </rss>
